@@ -95,12 +95,20 @@ model Video {
   status              VideoStatus  @default(PENDING_UPLOAD)
   
   // R2 keys
-  sourceKey           String?      // Original video in R2
+  sourceKey           String?      // Original video in R2 (will be deleted after processing)
+  originalVideoKey    String?      // Alias for sourceKey (for processor compatibility)
   masterPlaylistKey   String?      // Master HLS playlist (.m3u8)
   thumbnailKey        String?      // Thumbnail image
+  teaserKey           String?      // Teaser video (10s preview)
+  
+  // Processing
+  hlsProcessed        Boolean      @default(false)
+  processingProgress  Int          @default(0)  // 0-100
+  videoQualityHeights Int[]        @default([720, 1080])  // Allowed quality heights per tier
   
   // Metadata
   duration            Int?         // Duration in seconds
+  name                String?      // Alias for title (for processor compatibility)
   
   // Relations
   userId              String
@@ -115,6 +123,7 @@ model Video {
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+  @@index([hlsProcessed])
 }
 
 // Video quality/variant model for HLS

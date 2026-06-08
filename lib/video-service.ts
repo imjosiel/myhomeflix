@@ -1,4 +1,4 @@
-// Video service - Business logic for video operations
+// Updated video service with processor compatibility
 import { prisma } from './prisma';
 import { VideoStatus } from '@prisma/client';
 
@@ -8,15 +8,21 @@ export async function createVideoStub(params: {
   description?: string;
   sourceKey: string;
   userId: string;
+  videoQualityHeights?: number[];
 }) {
   const video = await prisma.video.create({
     data: {
       id: params.id,
       title: params.title,
+      name: params.title, // Alias for processor
       description: params.description ?? '',
       status: VideoStatus.UPLOADING,
       sourceKey: params.sourceKey,
+      originalVideoKey: params.sourceKey, // Alias for processor
       userId: params.userId,
+      videoQualityHeights: params.videoQualityHeights ?? [720, 1080],
+      hlsProcessed: false,
+      processingProgress: 0,
     },
   });
   return video;
@@ -25,7 +31,10 @@ export async function createVideoStub(params: {
 export async function markVideoQueuedForTranscode(id: string) {
   return prisma.video.update({
     where: { id },
-    data: { status: VideoStatus.QUEUED_FOR_TRANSCODE },
+    data: { 
+      status: VideoStatus.QUEUED_FOR_TRANSCODE,
+      processingProgress: 5,
+    },
   });
 }
 
@@ -48,6 +57,8 @@ export async function updateVideoAfterTranscode(params: {
         status: VideoStatus.READY,
         masterPlaylistKey: params.masterPlaylistKey,
         duration: params.duration,
+        hlsProcessed: true,
+        processingProgress: 100,
       },
     });
 
@@ -175,6 +186,7 @@ export async function updateVideo(params: {
   title?: string;
   description?: string;
   status?: VideoStatus;
+  videoQualityHeights?: number[];
 }) {
   // Check ownership unless admin
   if (!params.isAdmin) {
@@ -189,9 +201,13 @@ export async function updateVideo(params: {
   }
 
   const data: any = {};
-  if (params.title !== undefined) data.title = params.title;
+  if (params.title !== undefined) {
+    data.title = params.title;
+    data.name = params.title; // Keep alias synced
+  }
   if (params.description !== undefined) data.description = params.description;
   if (params.status !== undefined) data.status = params.status;
+  if (params.videoQualityHeights !== undefined) data.videoQualityHeights = params.videoQualityHeights;
 
   return prisma.video.update({
     where: { id: params.id },

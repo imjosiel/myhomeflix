@@ -36,16 +36,24 @@ export async function POST(req: NextRequest) {
       // Create new video record
       const id = uuidv4();
       resultVideoId = id;
-      key = `videos/${id}/source/${filename}`;
+      
+      // Updated key structure: videos/{id}/input.mp4
+      // This matches the processor's expected structure
+      const extension = filename.split('.').pop() || 'mp4';
+      key = `videos/${id}/input.${extension}`;
 
       await prisma.video.create({
         data: {
           id,
           title: title ?? filename,
+          name: title ?? filename, // Alias for processor
           description: description ?? '',
           status: 'UPLOADING',
           sourceKey: key,
+          originalVideoKey: key, // Alias for processor
           userId: session.user.id,
+          hlsProcessed: false,
+          processingProgress: 0,
         },
       });
     } else if (kind === 'subtitle') {
