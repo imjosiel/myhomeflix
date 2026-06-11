@@ -69,6 +69,33 @@ Backend APIs (/api/*)
 
 ## 🚀 Configuração
 
+### Início Rápido
+
+#### **Windows** 🪟
+Veja o guia completo: [WINDOWS_SETUP.md](WINDOWS_SETUP.md)
+
+```powershell
+# 1. Clone o repositório
+git clone https://github.com/imjosiel/myhomeflix.git
+cd myhomeflix
+
+# 2. Execute o setup automático (duplo clique ou via PowerShell)
+.\setup.bat
+
+# 3. Configure o .env com suas credenciais
+# Edite o arquivo .env
+
+# 4. Inicie o servidor (duplo clique ou via PowerShell)
+.\dev.bat
+```
+
+#### **macOS / Linux** 🐧
+
+```bash
+cd /app
+yarn install
+```
+
 ### 1. Clone e Instale Dependências
 
 ```bash

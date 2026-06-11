@@ -3,11 +3,15 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "NODE_OPTIONS='--max-old-space-size=512' next dev --hostname 0.0.0.0 --port 3000",
+        "dev": "cross-env NODE_OPTIONS=--max-old-space-size=512 next dev --hostname 0.0.0.0 --port 3000",
         "dev:no-reload": "next dev --hostname 0.0.0.0 --port 3000",
         "dev:webpack": "next dev --hostname 0.0.0.0 --port 3000",
-        "build": "next build",
-        "start": "next start"
+        "build": "cross-env NODE_OPTIONS=--max-old-space-size=512 next build",
+        "start": "next start",
+        "db:generate": "prisma generate",
+        "db:push": "prisma db push",
+        "db:studio": "prisma studio",
+        "setup": "yarn install && prisma generate"
     },
     "dependencies": {
         "@auth/prisma-adapter": "^2.11.2",
@@ -80,6 +84,7 @@
         "@types/node": "25.9.1",
         "@types/react": "19.2.15",
         "autoprefixer": "10.4.19",
+        "cross-env": "^10.1.0",
         "globals": "16.2.0",
         "postcss": "8",
         "prisma": "5.20.0",
