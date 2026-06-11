@@ -9,4 +9,10 @@ echo.
 echo Pressione Ctrl+C para parar o servidor
 echo.
 
-call yarn dev
+REM Detect package manager
+where yarn >nul 2>nul
+if %ERRORLEVEL% EQU 0 (
+    call yarn dev
+) else (
+    call npm run dev
+)

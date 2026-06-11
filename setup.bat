@@ -5,6 +5,21 @@ echo   MyHomeFlix - Setup para Windows
 echo ========================================
 echo.
 
+REM Detect package manager
+where yarn >nul 2>nul
+if %ERRORLEVEL% EQU 0 (
+    set PKG_MANAGER=yarn
+    set PKG_INSTALL=yarn install
+    set PKG_RUN=yarn
+) else (
+    set PKG_MANAGER=npm
+    set PKG_INSTALL=npm install
+    set PKG_RUN=npm run
+)
+
+echo Usando: %PKG_MANAGER%
+echo.
+
 REM Check if .env exists
 if not exist .env (
     echo [1/5] Criando arquivo .env...
@@ -20,7 +35,7 @@ if not exist .env (
 
 echo.
 echo [2/5] Instalando dependencias...
-call yarn install
+call %PKG_INSTALL%
 if errorlevel 1 (
     echo ❌ Erro ao instalar dependencias
     pause
